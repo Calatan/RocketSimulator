@@ -108,11 +108,11 @@ namespace RocketSimulator
                         {
                             string nameHeader = "Name".PadRight(30, ' ');
                             string yearHeader = "Year".PadRight(10, ' ');
-                            string registryHeader = "Regstry ";
+                            //string registryHeader = "Regstry ";
 
                             Write(nameHeader);
-                            Write(yearHeader);
-                            WriteLine(registryHeader);
+                            WriteLine(yearHeader);
+                            //WriteLine(registryHeader);
 
                             WriteLine("---------------------------------------------------");
 
@@ -122,11 +122,11 @@ namespace RocketSimulator
 
                                 string brand = car.Brand.PadRight(30, ' ');
                                 string model = car.Model.PadRight(10, ' ');
-                                string registry = car.Registry.PadRight(10, ' ');
+                                //string registry = car.Registry.PadRight(10, ' ');
 
                                 Write(brand);
-                                Write(model);
-                                WriteLine(registry);
+                                WriteLine(model);
+                                //WriteLine(registry);
                             }
 
                             WriteLine("");
@@ -146,14 +146,24 @@ namespace RocketSimulator
                         Clear();
 
                         string nameHeaderSimulation = "Name".PadRight(30, ' ');
-                        string yearHeaderSimulation = "Year".PadRight(10, ' ');
-                        string registryHeaderSimulation = "Velocity";
+                        string yearHeaderSimulation = "Year".PadRight(15, ' ');
+                        string velocityHeaderSimulation = "Velocity".PadRight(10, ' ');
+                        string fuelLeftHeaderSimulation = "Fuel left";
+                        string empty = " ".PadRight(45, ' ');
+                        string velocityUnitHeaderSimulation = "(km/h)".PadRight(10, ' ');
+                        string fuelLeftUnitHeaderSimulation = "(kg)";
+
 
                         Write(nameHeaderSimulation);
                         Write(yearHeaderSimulation);
-                        WriteLine(registryHeaderSimulation);
+                        Write(velocityHeaderSimulation);
+                        WriteLine(fuelLeftHeaderSimulation);
+                        Write(empty);
+                        Write(velocityUnitHeaderSimulation);
+                        WriteLine(fuelLeftUnitHeaderSimulation);
 
-                        WriteLine("---------------------------------------------------");
+
+                        WriteLine("--------------------------------------------------------------------------------------");
 
                         foreach (Rocket rocket in rocketList)
                         {
@@ -162,12 +172,14 @@ namespace RocketSimulator
                             rocket.Accelerate(seconds);
 
                             string brand = rocket.Brand.PadRight(30, ' ');
-                            string model = rocket.Model.PadRight(10, ' ');
-                            int velocity = rocket.Velocity;
+                            string model = rocket.Model.PadRight(15, ' ');
+                            string velocity = rocket.Velocity.ToString().PadRight(10, ' ');
+                            int fuelLeft = rocket.FuelLeft;
 
                             Write(brand);
                             Write(model);
-                            WriteLine(velocity);
+                            Write(velocity);
+                            WriteLine(fuelLeft);
                         }
 
                         WriteLine("");
@@ -226,14 +238,21 @@ namespace RocketSimulator.Domain
 
         public override void Accelerate(int seconds)
         {
-            if (seconds <= 15)
+            if (seconds <= 7.5)
             {
                 Velocity = (int)((15 * seconds - (seconds * seconds)) * 0.01 * 3.6);
+                FuelLeft = (int)(1 - ((1 / 7.5) * seconds));
+            }
+            else if (seconds <= 15)
+            {
+                Velocity = (int)((15 * seconds - (seconds * seconds)) * 0.01 * 3.6);
+                FuelLeft = 0;
             }
             else
             {
                 Velocity = 0;
-            }            
+                FuelLeft = 0;
+            }
         }
     }
 }
@@ -249,13 +268,20 @@ namespace RocketSimulator.Domain
 
         public override void Accelerate(int seconds)
         {
-            if (seconds < 3.5)
+            if (seconds < 2.5)
             {
                 Velocity = (int)((14 * seconds - (6 * seconds * seconds)) * 3.6);
+                FuelLeft = (int)(5 - (2 * seconds));
+            }
+            else if (seconds < 3.5)
+            {
+                Velocity = (int)((14 * seconds - (6 * seconds * seconds)) * 3.6);
+                FuelLeft = 0;
             }
             else
             {
                 Velocity = 0;
+                FuelLeft = 0;
             }
         }
     }
@@ -273,14 +299,17 @@ namespace RocketSimulator.Domain
 
         public override void Accelerate(int seconds)
         {
-            if (seconds < 75)
+            if (seconds < 21.429)
             {
-                Velocity = (int)(-1 * ((3 * seconds * (seconds - 50))/100) * 3.6);
+                Velocity = (int)(-1 * ((120 * seconds * ((3.5 * seconds) - 50))/100) * 3.6);
+                FuelLeft = (int)((21.429 * 7.5) - (7.5 * seconds));
             }
             else
             {
                 Velocity = 0;
+                FuelLeft = 0;
             }
+
         }
     }
 }
@@ -297,7 +326,21 @@ namespace RocketSimulator.Domain
 
         public override void Accelerate(int seconds)
         {
-            Velocity = (int)(seconds * 1 * 3.6);
+            if (seconds < 62.5)
+            {
+                Velocity = (int)(seconds * 25.6);
+                FuelLeft = (int)(2500 - (40 * seconds));
+            }
+            else if (seconds < 125)
+            {
+                Velocity = (int)((62.5 * 25.6) - ((seconds - 62.5) * 25.6));
+                FuelLeft = 0;
+            }
+            else
+            {
+                Velocity = 0;
+                FuelLeft = 0;
+            }
         }
     }
 }
@@ -314,7 +357,21 @@ namespace RocketSimulator.Domain
 
         public override void Accelerate(int seconds)
         {
-            Velocity = (int)(seconds * 2.5 * 3.6);
+            if (seconds < 100)
+            {
+                Velocity = (int)(seconds * 18.3 * 3.6);
+                FuelLeft = (int)(5000 - (50 * seconds));
+            }
+            else if (seconds < 286.73)
+            {
+                Velocity = (int)((100 * 18.3) - (seconds * 9.8));
+                FuelLeft = 0;
+            }
+            else
+            {
+                Velocity = 0;
+                FuelLeft = 0;
+            }
         }
     }
 }
@@ -331,7 +388,16 @@ namespace RocketSimulator.Domain
 
         public override void Accelerate(int seconds)
         {
-            Velocity = (int)(seconds * 75 * 3.6);
+            if (seconds < 156)
+            {
+                Velocity = (int)(seconds * 45 * 3.6);
+                FuelLeft = (int)(25000 - (160 * seconds));
+            }
+            else
+            {
+                Velocity = (int)(156 * 45 * 3.6);
+                FuelLeft = 0;
+            }
         }
     }
 }
@@ -348,7 +414,16 @@ namespace RocketSimulator.Domain
 
         public override void Accelerate(int seconds)
         {
-            Velocity = (int)((Math.Pow(Math.E, (seconds / 14)) -1) * 3.6);
+            if (seconds < 162)
+            {
+                Velocity = (int)(((((Math.Pow(Math.E, (seconds / 22)) - 1) / 0.5) + (15 * seconds)) / 2) * 3.6);
+                FuelLeft = (int)(2100000 - (13000 * seconds));
+            }
+            else
+            {
+                Velocity = (int)(((((Math.Pow(Math.E, (162 / 22)) - 1) / 0.5) + (15 * 162)) / 2) * 3.6);
+                FuelLeft = 0;
+            }
         }
     }
 }
