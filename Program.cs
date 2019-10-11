@@ -1,10 +1,12 @@
 ﻿using RocketSimulator.Domain;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using static System.Math;
 using static System.Console;
 
-namespace RocketSimulator
+namespace RocketSimulatorAllInOne
 {
     class Program
     {
@@ -12,6 +14,8 @@ namespace RocketSimulator
 
         static void Main(string[] args)
         {
+            Console.SetWindowSize(120, 30);
+
             bool shouldNotExit = true;
 
             uint rocketListCurrentIndexPosition = 0;
@@ -20,12 +24,23 @@ namespace RocketSimulator
 
             while (shouldNotExit)
             {
+                WriteLine("   MAIN MENU");
+                WriteLine("");
                 WriteLine("1. Add rocket");
                 WriteLine("2. List rockets");
                 WriteLine("3. Run simulation");
                 WriteLine("4. Display velocity over time");
                 WriteLine("5. Exit");
-
+                WriteLine("");
+                WriteLine("");
+                WriteLine("Instructions:");
+                WriteLine("Add one or several rockets.");
+                WriteLine("Only one rocket of each type may be added.");
+                WriteLine("You must add at least one rocket before you can run simulation.");
+                WriteLine("You must run simulation before displaying velocity over time.");
+                WriteLine("");
+                WriteLine("");
+                WriteLine("<Choose any number from the MAIN MENU to continue>");
                 ConsoleKeyInfo keyPressed = ReadKey(true);
 
                 Clear();
@@ -35,7 +50,7 @@ namespace RocketSimulator
                     case ConsoleKey.D1:
                     case ConsoleKey.NumPad1:
                         {
-                            WriteLine("Choose rocket to add: ");
+                            WriteLine("    CHOOSE ROCKET TO ADD: ");
                             WriteLine("");
                             WriteLine("1 - Archytas' Flying Pigeon");           // Able to fly about 200 meters before it ran out of steam.
                             WriteLine("2 - Goddard's Auburn rocket");           // It attained a height of 41 feet in 2.5 seconds, and it came to rest 184 feet from the launch pad.
@@ -44,7 +59,10 @@ namespace RocketSimulator
                             WriteLine("5 - Navy Viking 7");                     // Set the new altitude record for single stage rockets by reaching 136 miles and a speed of 4,100 mph.
                             WriteLine("6 - Jupiter-C");                         // To an altitude of 680 mi (1,100 km), a speed of 16,000 mph (7 km/s), and a range of 3,300 mi (5,300 km).
                             WriteLine("7 - Saturn V");                          // The first stage burned for about 2 minutes and 41 seconds, lifting the rocket to an altitude of 42 miles (68 km) and a speed of 6,164 miles per hour (2,756 m/s) and burning 4,700,000 pounds (2,100,000 kg) of propellant.  S-II second stage burned for 6 minutes and propelled the craft to 109 miles (175 km) and 15,647 mph (6,995 m/s), close to orbital velocity. During Apollo 11, a typical lunar mission, the third stage burned for about 2.5 minutes until first cutoff at 11 minutes 40 seconds. At this point it was 1,430 nautical miles (2,650 km)  downrange and in a parking orbit at an altitude of 103.2 nautical miles (191.1 km)  and velocity of 17,432 mph (7,793 m/s).
-                            
+                            WriteLine("");
+                            WriteLine("");
+                            WriteLine("<Choose any number from the list to continue>");
+
                             //Genererar ett hexadecimalt slumptal på exakt sju tecken som används som registry
                             var r = new Random();
                             int A = r.Next(16777216, 268435455);
@@ -89,77 +107,76 @@ namespace RocketSimulator
 
                             Rocket theRocket = SearchRocketByName(name);
 
-                                if (theRocket != null)
-                                {
-                                    WriteLine("Rocket already added");
-                                    Thread.Sleep(2000);
-                                }
-                                else
-                                {
-                                    rocketList[rocketListCurrentIndexPosition++] = newRocket;
-                                    WriteLine("Rocket added");
-                                    Thread.Sleep(2000);
-                                }
-
+                            if (theRocket != null)
+                            {
+                                WriteLine("Rocket already added");
+                                Thread.Sleep(2000);
+                            }
+                            else
+                            {
+                                rocketList[rocketListCurrentIndexPosition++] = newRocket;
+                                WriteLine("Rocket added");
+                                Thread.Sleep(2000);
+                            }
                         }
-
                         break;
 
                     case ConsoleKey.D2:
                     case ConsoleKey.NumPad2:
                         {
+                            WriteLine("LIST OF ROCKETS ADDED:");
+                            WriteLine("");
+
                             string nameHeader = "Name".PadRight(30, ' ');
                             string yearHeader = "Year".PadRight(10, ' ');
-                            //string registryHeader = "Regstry ";
 
                             Write(nameHeader);
                             WriteLine(yearHeader);
-                            //WriteLine(registryHeader);
 
-                            WriteLine("---------------------------------------------------");
+                            WriteLine("-------------------------------------");
 
-                            foreach (Rocket car in rocketList)
+                            foreach (Rocket rocket in rocketList)
                             {
-                                if (car == null) continue;
+                                if (rocket == null) continue;
 
-                                string brand = car.Brand.PadRight(30, ' ');
-                                string model = car.Model.PadRight(10, ' ');
-                                //string registry = car.Registry.PadRight(10, ' ');
+                                string brand = rocket.Brand.PadRight(30, ' ');
+                                string model = rocket.Model.PadRight(10, ' ');
 
                                 Write(brand);
                                 WriteLine(model);
-                                //WriteLine(registry);
                             }
 
+                            WriteLine("");
                             WriteLine("");
                             WriteLine("<Press any key to continue>");
                             ReadKey(true);
                         }
-
                         break;
 
                     case ConsoleKey.D3:
                     case ConsoleKey.NumPad3:
 
                         Write("Engine burn period (sec): ");
-
                         seconds = int.Parse(ReadLine());
 
                         Clear();
 
-                        string nameHeaderSimulation = "Name".PadRight(30, ' ');
-                        string yearHeaderSimulation = "Year".PadRight(15, ' ');
+                        WriteLine("Engine burn period (sec): " + seconds);
+                        WriteLine("");
+
+                        string empty = " ".PadRight(45, ' ');
                         string velocityHeaderSimulation = "Velocity".PadRight(10, ' ');
                         string fuelLeftHeaderSimulation = "Fuel left";
-                        string empty = " ".PadRight(45, ' ');
+                        string nameHeaderSimulation = "Name".PadRight(30, ' ');
+                        string yearHeaderSimulation = "Year".PadRight(15, ' ');
                         string velocityUnitHeaderSimulation = "(km/h)".PadRight(10, ' ');
                         string fuelLeftUnitHeaderSimulation = "(kg)";
 
-                        Write(nameHeaderSimulation);
-                        Write(yearHeaderSimulation);
+                        Write(empty);
                         Write(velocityHeaderSimulation);
                         WriteLine(fuelLeftHeaderSimulation);
-                        Write(empty);
+                        Write(nameHeaderSimulation);
+                        Write(yearHeaderSimulation);
                         Write(velocityUnitHeaderSimulation);
                         WriteLine(fuelLeftUnitHeaderSimulation);
 
@@ -183,6 +200,7 @@ namespace RocketSimulator
                         }
 
                         WriteLine("");
+                        WriteLine("");
                         WriteLine("<Press any key to continue>");
                         ReadKey(true);
 
@@ -204,7 +222,7 @@ namespace RocketSimulator
                         }
 
                         bool shouldDisplay = true;
-                        
+
                         while (shouldDisplay == true)
                         {
                             foreach (Rocket rocket in rocketList)
@@ -276,6 +294,12 @@ namespace RocketSimulator
                                         vMax = Math.Abs(coordinatesVelocity[a]);
                                 }
 
+                                //Förhindrar division med 0 i de fall vMax är 0 (kan hända t ex då 'Engine burn period' är stor och sPart blir större än tiden en raket faktiskt rör sig).
+                                if (vMax == 0)
+                                {
+                                    vMax = 1;
+                                }
+
                                 //Skriver ut datapunkter
                                 i = 0;
                                 while (i < coordinatesSeconds.Length)
@@ -309,7 +333,7 @@ namespace RocketSimulator
                                     i++;
                                 }
 
-
+                                SetCursorPosition(0, 0);
                                 SetCursorPosition(0, 29);
 
                                 keyPressed = ReadKey(true);
@@ -319,13 +343,17 @@ namespace RocketSimulator
                                     counterRockets++;
                                     continue;
                                 }
+                                else if (keyPressed.Key == ConsoleKey.Escape)
+                                {
+                                    shouldDisplay = false;
+                                }
                                 else
                                 {
                                     shouldDisplay = false;
                                 }
                                 shouldDisplay = false;
                             }
-
+                            shouldDisplay = false;
                         }
 
                         ReadKey(true);
@@ -438,7 +466,7 @@ namespace RocketSimulator.Domain
         {
             if (seconds < 21.429)
             {
-                Velocity = (int)(-1 * ((120 * seconds * ((3.5 * seconds) - 50))/100) * 3.6);
+                Velocity = (int)(-1 * ((120 * seconds * ((3.5 * seconds) - 50)) / 100) * 3.6);
                 FuelLeft = (int)((21.429 * 7.5) - (7.5 * seconds));
             }
             else
@@ -501,7 +529,7 @@ namespace RocketSimulator.Domain
             }
             else if (seconds < 286.73)
             {
-                Velocity = (int)((100 * 18.3) - (seconds * 9.8));
+                Velocity = (int)((100 * 18.3 * 3.6) - ((seconds - 100) * 9.8));
                 FuelLeft = 0;
             }
             else
@@ -564,4 +592,3 @@ namespace RocketSimulator.Domain
         }
     }
 }
-
