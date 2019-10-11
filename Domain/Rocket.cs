@@ -41,6 +41,6 @@ namespace RocketSimulator.Domain
         public int Velocity { get; protected set; }
         public int FuelLeft { get; protected set; }
 
-        public abstract void Accelerate(int seconds);
+        public abstract void Accelerate(float seconds);
     }
 }

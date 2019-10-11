@@ -16,6 +16,8 @@ namespace RocketSimulator
 
             uint rocketListCurrentIndexPosition = 0;
 
+            int seconds = 0;
+
             while (shouldNotExit)
             {
                 WriteLine("1. Add rocket");
@@ -141,7 +143,7 @@ namespace RocketSimulator
 
                         Write("Engine burn period (sec): ");
 
-                        int seconds = int.Parse(ReadLine());
+                        seconds = int.Parse(ReadLine());
 
                         Clear();
 
@@ -153,7 +155,6 @@ namespace RocketSimulator
                         string velocityUnitHeaderSimulation = "(km/h)".PadRight(10, ' ');
                         string fuelLeftUnitHeaderSimulation = "(kg)";
 
-
                         Write(nameHeaderSimulation);
                         Write(yearHeaderSimulation);
                         Write(velocityHeaderSimulation);
@@ -161,7 +162,6 @@ namespace RocketSimulator
                         Write(empty);
                         Write(velocityUnitHeaderSimulation);
                         WriteLine(fuelLeftUnitHeaderSimulation);
-
 
                         WriteLine("--------------------------------------------------------------------------------------");
 
@@ -191,7 +191,144 @@ namespace RocketSimulator
                     case ConsoleKey.D4:
                     case ConsoleKey.NumPad4:
 
+                        int counterRockets = 1;
 
+                        //Räknar antalet tillagda raketer (rockets i rocketList)
+                        int numberOfRockets = 0;
+                        foreach (var item in rocketList)
+                        {
+                            if (item != null)
+                            {
+                                numberOfRockets++;
+                            }
+                        }
+
+                        bool shouldDisplay = true;
+                        
+                        while (shouldDisplay == true)
+                        {
+                            foreach (Rocket rocket in rocketList)
+                            {
+                                if (rocket == null) continue;
+
+                                string brand = rocket.Brand;
+
+                                Clear();
+
+                                WriteLine("");
+                                WriteLine("                            Displaying velocity over " + seconds + " seconds for " + brand);
+                                WriteLine("");
+                                WriteLine("     km/h");
+                                WriteLine("       ^");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("       |");
+                                WriteLine("        ----------------------------------------------------------------------------------------------------> Seconds");
+                                WriteLine("");
+                                WriteLine("");
+                                WriteLine("       ESC: Main menu                                   (" + counterRockets + "/" + numberOfRockets + ")                                         (>) Next rocket");
+
+                                int sMax = seconds;
+                                float sPart = (((float)(sMax)) / 16);
+
+                                float[] coordinatesSeconds = new float[17];
+                                int[] coordinatesVelocity = new int[17];
+
+                                // Skapar värden för x-axeln
+                                int i = 1;
+                                while (i < coordinatesSeconds.Length)
+                                {
+                                    coordinatesSeconds[i++] = sPart;
+                                    sPart = sPart + (((float)(sMax)) / 16);
+                                }
+
+                                //Skapar värden för y-axel 
+                                i = 0;
+                                foreach (int value in coordinatesSeconds)
+                                {
+                                    rocket.Accelerate(value);
+                                    int velocity = rocket.Velocity;
+                                    coordinatesVelocity[i++] = velocity;
+                                }
+
+                                //Hittar maximala hastigheten vMax för att kunna skala om värden för y-axeln
+                                int vMax = coordinatesVelocity[0];
+                                for (int a = 0; a < coordinatesVelocity.Length; a++)
+                                {
+                                    if (vMax < Math.Abs(coordinatesVelocity[a]))
+                                        vMax = Math.Abs(coordinatesVelocity[a]);
+                                }
+
+                                //Skriver ut datapunkter
+                                i = 0;
+                                while (i < coordinatesSeconds.Length)
+                                {
+                                    //Första utkastet till plottfunktion (som inte funkade som det var tänkt)
+                                    //SetCursorPosition(((coordinatesSeconds[i] * 120) / sMax) + 6, 23 - ((coordinatesVelocity[i] * 20) / vMax));
+                                    SetCursorPosition(7 + (6 * i), 25 - ((coordinatesVelocity[i] * 20) / vMax));
+                                    Write("¤");
+                                    i++;
+                                }
+
+                                //Skriver ut skala för y-axel
+                                SetCursorPosition(1, 5);
+                                Write("{0,5}", vMax);
+                                SetCursorPosition(1, 10);
+                                Write("{0,5}", ((3 * vMax) / 4));
+                                SetCursorPosition(1, 15);
+                                Write("{0,5}", (vMax / 2));
+                                SetCursorPosition(1, 20);
+                                Write("{0,5}", (vMax / 4));
+                                SetCursorPosition(1, 25);
+                                Write("{0,5}", "0");
+
+                                //Skriver ut skala för x-axel
+                                SetCursorPosition(2, 26);
+                                i = 0;
+                                foreach (var time in coordinatesSeconds)
+                                {
+                                    int tick = (int)coordinatesSeconds[i];
+                                    Write("{0,6}", tick);
+                                    i++;
+                                }
+
+
+                                SetCursorPosition(0, 29);
+
+                                keyPressed = ReadKey(true);
+
+                                if (keyPressed.Key == ConsoleKey.RightArrow && counterRockets != numberOfRockets)
+                                {
+                                    counterRockets++;
+                                    continue;
+                                }
+                                else
+                                {
+                                    shouldDisplay = false;
+                                }
+                                shouldDisplay = false;
+                            }
+
+                        }
+
+                        ReadKey(true);
 
                         break;
 
@@ -236,7 +373,7 @@ namespace RocketSimulator.Domain
 
         }
 
-        public override void Accelerate(int seconds)
+        public override void Accelerate(float seconds)
         {
             if (seconds <= 7.5)
             {
@@ -266,7 +403,7 @@ namespace RocketSimulator.Domain
 
         }
 
-        public override void Accelerate(int seconds)
+        public override void Accelerate(float seconds)
         {
             if (seconds < 2.5)
             {
@@ -297,7 +434,7 @@ namespace RocketSimulator.Domain
 
         }
 
-        public override void Accelerate(int seconds)
+        public override void Accelerate(float seconds)
         {
             if (seconds < 21.429)
             {
@@ -324,7 +461,7 @@ namespace RocketSimulator.Domain
 
         }
 
-        public override void Accelerate(int seconds)
+        public override void Accelerate(float seconds)
         {
             if (seconds < 62.5)
             {
@@ -355,7 +492,7 @@ namespace RocketSimulator.Domain
 
         }
 
-        public override void Accelerate(int seconds)
+        public override void Accelerate(float seconds)
         {
             if (seconds < 100)
             {
@@ -386,7 +523,7 @@ namespace RocketSimulator.Domain
 
         }
 
-        public override void Accelerate(int seconds)
+        public override void Accelerate(float seconds)
         {
             if (seconds < 156)
             {
@@ -412,11 +549,11 @@ namespace RocketSimulator.Domain
 
         }
 
-        public override void Accelerate(int seconds)
+        public override void Accelerate(float seconds)
         {
             if (seconds < 162)
             {
-                Velocity = (int)(((((Math.Pow(Math.E, (seconds / 22)) - 1) / 0.5) + (15 * seconds)) / 2) * 3.6);
+                Velocity = (int)(((((Math.Pow(Math.E, (seconds / 22)) - 1) / 0.5) + (7.5 * seconds)) / 2) * 3.6);
                 FuelLeft = (int)(2100000 - (13000 * seconds));
             }
             else
